@@ -275,7 +275,18 @@ None.
 - **Files:** `pyproject.toml`, `uv.lock`, `.python-version`, `.gitignore`, `README.md`, `.github/workflows/`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 and §6.4 give all contracts and data
 - **Branch / worktree / PR:** `specx/NOTES-T1` / `/home/w1/specx-example-NOTES-T1` / —
-- **Assumptions:** None yet.
+- **Assumptions:**
+  - The project has no build backend. pytest and uvicorn find the code in `src` directly. Reason: A build backend is a dependency that ROOT §6.2 does not list.
+  - `pydantic==2.14.3` is a direct dependency. Reason: The code imports Pydantic, and ROOT §6.2 gives its version.
+  - `pyproject.toml` requires uv 0.12.23. Reason: ROOT §6.2 gives this version.
+  - SQLite `PRAGMA user_version` records the last applied schema change. Reason: The schema needs no extra table for this.
+  - The rollback file also sets `user_version` to 0. The owner runs it with the `sqlite3` tool. Reason: Then the next start applies schema change 1 again (§6.13).
+  - The API opens one SQLite connection for each operation. It reads `NOTES_DB_PATH` when it opens the connection. Reason: Each test can then use its own file.
+  - Pydantic validates the fields. A `null` value or a value that is not text gets 422. Reason: Pydantic does this without custom code.
+  - FastAPI sends the 500 error. The code has no custom error handler. Reason: ROOT §6.7 gives no other format.
+  - The CI workflow runs on each pull request with `uv run --locked pytest`. Reason: `--locked` also stops CI if `uv.lock` is old.
+  - `.gitignore` ignores all `*.db` files. Reason: Test and local database files must not go into git.
+  - The README start command gives `--host 127.0.0.1 --port 8000`. Reason: The command then shows the values of ROOT §6.8 and §6.9.
 
 **Steps**
 
@@ -296,6 +307,8 @@ None.
 - 2026-11-08: created.
 - 2026-11-08: the user approved the task: "yes approve".
 - 2026-11-08: the user approved the NOTES-M1 preview: "Approve and build".
+- 2026-11-08: The start point is `749f223`.
+- 2026-11-08: An agent built NOTES-T1 in commit `b1d1fda`. The main session ran `uv run --locked pytest` in the worktree: 15 passed, 1 warning. The warning: Starlette marks the use of `httpx` with `TestClient` as deprecated. The main session merged the task into `specx/delivery-NOTES`.
 
 ### NOTES-T2: List, change, and delete notes
 
