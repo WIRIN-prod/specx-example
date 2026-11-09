@@ -1,8 +1,8 @@
 ---
 id: NOTES
 title: Notes
-status: approved
-version: 3
+status: draft
+version: 4
 parent: ROOT
 depends_on: []
 ---
@@ -275,18 +275,25 @@ None.
 - **Answer:** "Add a leak test (Recommended)", "Fix both (Recommended)", and "New task NOTES-T4 in M1 (Recommended)". (user, 2026-11-09)
 - **Affects:** NOTES-T4, the tests
 
+### NOTES-D5: Leak test for new store functions
+
+- **Status:** answered (2026-11-09)
+- **Question:** The NOTES-T4 review found F1 and F2. What happens to the leak test in NOTES-T2?
+- **Answer:** "Add both to NOTES-T2 (Recommended)". (user, 2026-11-09)
+- **Affects:** NOTES-T2
+
 ## 10. Tasks
 
 ### Milestones
 
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
-| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-progress |
+| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-review |
 | NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | todo |
 
 ### NOTES-T1: Create and read a note
 
-- **Status:** in-progress
+- **Status:** in-review
 - **Type:** feature
 - **Story:** As the owner, I want to save a note and read it again, so that I keep my notes in one place.
 - **Milestone:** NOTES-M1
@@ -340,9 +347,9 @@ None.
 - **Story:** As the owner, I want to see all my notes, change them, and delete them, so that my notes stay correct.
 - **Milestone:** NOTES-M2
 - **Parent:** None
-- **Depends on:** NOTES-T1
+- **Depends on:** NOTES-T1, NOTES-T4
 - **Covers:** NOTES-R3, NOTES-R4, NOTES-R5, NOTES-R6, NOTES-R9, NOTES-AC3, NOTES-AC4, NOTES-AC5, NOTES-AC6, NOTES-AC8
-- **Decisions:** ROOT-D11, ROOT-D12, NOTES-D2, NOTES-D3
+- **Decisions:** ROOT-D11, ROOT-D12, NOTES-D2, NOTES-D3, NOTES-D5
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 gives all contracts and errors
 - **Branch / worktree / PR:** —
@@ -353,20 +360,23 @@ None.
 1. Add `GET /notes`, `PATCH /notes/{id}`, and `DELETE /notes/{id}` with the rules, order, and errors in §6.3.
 2. Write integration tests for AC3, AC4, AC5, AC6, and AC8.
 3. Add the new endpoints to `README.md`.
+4. Add each new store function to the leak test, on success and on failure (NOTES-D5).
+5. Run `gc.collect()` once before the warning block of the leak test (NOTES-D5).
 
 **Verification**
 
-- `uv run pytest`: all tests pass.
+- `uv run --locked pytest`: all tests pass (ROOT §6.12).
 - Start the API. Send `GET /notes`, `PATCH /notes/1`, and `DELETE /notes/1` with `curl`.
 
 **Log**
 
 - 2026-11-08: created.
 - 2026-11-08: the user approved the task: "yes approve".
+- 2026-11-09: steps 4 and 5 added from NOTES-D5. The gate command now matches ROOT §6.12.
 
 ### NOTES-T3: Fixes from the NOTES-M1 review
 
-- **Status:** in-progress
+- **Status:** in-review
 - **Type:** chore
 - **Why:** the NOTES-M1 review found M3, L1, L3, L4, L5, and L6. The user chose the fixes (ROOT-D16 to ROOT-D19).
 - **Done when:** NOTES-AC10 and NOTES-AC11 have tests that pass, the tests show no `ResourceWarning`, and `requires-python` is `==3.14.*`.
@@ -411,7 +421,7 @@ None.
 
 ### NOTES-T4: Leak test and test fixes from the NOTES-M1 re-review
 
-- **Status:** in-progress
+- **Status:** in-review
 - **Type:** chore
 - **Why:** The re-review found F1, F2, and F3. The user chose the fixes (NOTES-D4).
 - **Done when:** The leak test fails on the old `store.py` and passes on the new one. The AC10 and AC11 tests work as root and from `tests/`.
@@ -450,6 +460,7 @@ None.
 - 2026-11-09: an agent built the task in commit `6bfb95a`. The main session merged it. `uv run --locked pytest` gives 19 passed.
 - 2026-11-09: the main session ran the leak test on the old `store.py` from `8a18465`. The test fails, as the task requires. The AC11 test passes from `tests/`.
 - 2026-11-09: the independent review is [2026-11-09-NOTES-T4.md](../_reviews/2026-11-09-NOTES-T4.md). The NOTES-M1 demo waits for the user.
+- 2026-11-09: at the demo, the user chose "Continue to NOTES-M2 (Recommended)". The task waits for the phase pull request.
 
 ## 11. Open questions
 
@@ -462,3 +473,4 @@ None.
 | 1 | 2026-11-08 | Created | user, "yes approve" |
 | 2 | 2026-11-08 | NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11, the 500 error, the title trim, and NOTES-T3, from the NOTES-M1 review | user, "Yes approve" |
 | 3 | 2026-11-09 | NOTES-D4 and task NOTES-T4, from the NOTES-M1 re-review | user, "yes" |
+| 4 | 2026-11-09 | NOTES-D5; NOTES-T2 steps 4 and 5; NOTES-T2 gate command | pending |
