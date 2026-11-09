@@ -359,7 +359,7 @@ None.
 - **Decisions:** ROOT-D11, ROOT-D12, NOTES-D2, NOTES-D3, NOTES-D5
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 gives all contracts and errors
-- **Branch / worktree / PR:** `specx/NOTES-T2`, `../specx-example-NOTES-T2`, —
+- **Branch / worktree / PR:** `specx/NOTES-T2`, `../specx-example-NOTES-T2`, #1
 - **Assumptions:**
   - The `No fields to change` error has the body `{"detail": "No fields to change"}`. Reason: The §6.3 error table gives this row its own body.
   - A `PATCH` with no fields gets 422 before the ID check. Reason: §6.5 puts validation before the 404 check.
@@ -404,7 +404,7 @@ None.
 - **Decisions:** ROOT-D16, ROOT-D17, ROOT-D18, ROOT-D19
 - **Files:** `pyproject.toml`, `uv.lock`, `src/notes_api/`, `tests/`
 - **Model:** small, because the spec gives each change
-- **Branch / worktree / PR:** `specx/NOTES-T3`, `../specx-example-NOTES-T3`, —
+- **Branch / worktree / PR:** `specx/NOTES-T3`, `../specx-example-NOTES-T3`, #1
 - **Assumptions:**
   - The error handler catches each `Exception`, not only `sqlite3.Error`. Reason: ROOT §6.3 gives one body for all 500 errors.
   - Starlette raises the error again after the handler sends the response. Reason: Uvicorn then writes the error to the log (ROOT §6.7).
@@ -449,7 +449,7 @@ None.
 - **Decisions:** NOTES-D4
 - **Files:** `tests/`
 - **Model:** small, because the spec gives each change
-- **Branch / worktree / PR:** `specx/NOTES-T4`, `../specx-example-NOTES-T4`, —
+- **Branch / worktree / PR:** `specx/NOTES-T4`, `../specx-example-NOTES-T4`, #1
 - **Assumptions:**
   - The failed reads and writes use a database with no `notes` table. Reason: The failure then does not depend on file mode or root.
   - The failed `migrate` uses a file that is not a SQLite database. Reason: `connect` succeeds, and the first `PRAGMA` then fails.
@@ -492,7 +492,7 @@ None.
 - **Decisions:** ROOT-D11, NOTES-D6
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because the spec gives the exact body
-- **Branch / worktree / PR:** `specx/NOTES-T5`, `../specx-example-NOTES-T5`, —
+- **Branch / worktree / PR:** `specx/NOTES-T5`, `../specx-example-NOTES-T5`, #1
 - **Assumptions:**
   - `input` holds the request body as the client sent it, also with unknown fields. Reason: The §6.3 row says "the request body".
 
@@ -522,6 +522,7 @@ None.
 - 2026-11-09: the build agent ran `pkill -f "port $PORT"` with an empty `PORT`. The command stopped `buildx-api.service`, `openclaw-gateway.service`, and `openclaw-gateway-quota-test.service`. systemd started them again. The main session told the user.
 - 2026-11-09: the independent review is [2026-11-09-NOTES-T5.md](../_reviews/2026-11-09-NOTES-T5.md). The review found that §6.3 fixes the `input` assumption.
 - 2026-11-09: at the NOTES-M2 demo, the user chose "Keep as built (Recommended)" for review F1 and "Open the PR (Recommended)".
+- 2026-11-09: the main session opened pull request [#1](https://github.com/WIRIN-prod/specx-example/pull/1).
 
 ## 11. Open questions
 

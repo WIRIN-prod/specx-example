@@ -8,7 +8,7 @@ The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec
 
 ## Waiting on you
 
-- Approve the NOTES pull request.
+- Approve the NOTES pull request [#1](https://github.com/WIRIN-prod/specx-example/pull/1).
 - ROOT-D4 (hosting) is open: [spec.md](spec.md), section 9. The DEPLOY phase needs it; the Core stage does not.
 
 ## Roadmap
