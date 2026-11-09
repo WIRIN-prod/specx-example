@@ -1,8 +1,11 @@
+import gc
+import os
 import re
 import sqlite3
 import subprocess
 import sys
 from contextlib import closing
+import warnings
 from pathlib import Path
 
 import pytest
@@ -11,6 +14,7 @@ from fastapi.testclient import TestClient
 from notes_api import store
 from notes_api.main import app
 
+SRC = Path(__file__).resolve().parent.parent / "src"
 STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 
@@ -109,6 +113,7 @@ def test_schema_change_rollback_and_reapply(db_path):
     assert count_notes(db_path) == 0
 
 
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0, reason="root can write to a read-only file")
 def test_ac10_database_error_after_start(db_path):
     with TestClient(app, raise_server_exceptions=False) as c:
         assert c.post("/notes", json={"title": "First"}).status_code == 201
@@ -122,9 +127,34 @@ def test_ac10_database_error_after_start(db_path):
 def test_ac11_start_fails_when_database_cannot_open(tmp_path):
     env = {"NOTES_DB_PATH": str(tmp_path / "missing" / "notes.db")}
     result = subprocess.run(
-        [sys.executable, "-m", "uvicorn", "notes_api.main:app", "--app-dir", "src", "--port", "0"],
+        [sys.executable, "-m", "uvicorn", "notes_api.main:app", "--app-dir", str(SRC), "--port", "0"],
         env=env, capture_output=True, text=True, timeout=30,
     )
     assert result.returncode != 0
     assert "unable to open database file" in result.stderr
     assert "Application startup failed" in result.stderr
+
+
+def test_store_closes_connections_leak(db_path):
+    def fails(call):
+        with pytest.raises(sqlite3.DatabaseError):
+            call()
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        store.migrate()
+        note = store.create_note("T", "B")
+        assert store.get_note(note["id"]) == note
+        assert store.get_note(99) is None
+
+        db_path.unlink()
+        sqlite3.connect(db_path).close()  # an empty database with no notes table
+        fails(lambda: store.create_note("T", "B"))
+        fails(lambda: store.get_note(1))
+
+        db_path.write_bytes(b"not a database" * 100)
+        fails(store.migrate)
+
+        gc.collect()  # each open connection gives its warning now
+    leaks = [str(w.message) for w in caught if "unclosed database" in str(w.message)]
+    assert leaks == []
