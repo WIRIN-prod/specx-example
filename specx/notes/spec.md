@@ -310,7 +310,7 @@ None.
 - **Decisions:** ROOT-D1, ROOT-D2, ROOT-D3, ROOT-D6 to ROOT-D12, NOTES-D1, NOTES-D2
 - **Files:** `pyproject.toml`, `uv.lock`, `.python-version`, `.gitignore`, `README.md`, `.github/workflows/`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 and §6.4 give all contracts and data
-- **Branch / worktree / PR:** `specx/NOTES-T1` / `/home/w1/specx-example-NOTES-T1` / —
+- **Branch / worktree / PR:** `specx/NOTES-T1` / `/home/w1/specx-example-NOTES-T1` / #1
 - **Assumptions:**
   - The project has no build backend. pytest and uvicorn find the code in `src` directly. Reason: A build backend is a dependency that ROOT §6.2 does not list.
   - `pydantic==2.14.3` is a direct dependency. Reason: The code imports Pydantic, and ROOT §6.2 gives its version.
