@@ -56,7 +56,11 @@ List all notes. The note with the latest `updated_at` is first. If two notes hav
 curl http://127.0.0.1:8000/notes
 ```
 
-Change a note. Send `title`, `body`, or both. The same rules as for a new note apply. The API changes only these fields and `updated_at`. A request with no `title` and no `body` gets status 422 with `No fields to change`.
+Change a note. Send `title`, `body`, or both. The same rules as for a new note apply. The API changes only these fields and `updated_at`. A request with no `title` and no `body` gets status 422 with this body, where `input` is the request body:
+
+```json
+{"detail": [{"type": "value_error", "loc": ["body"], "msg": "No fields to change", "input": {}}]}
+```
 
 ```sh
 curl -X PATCH http://127.0.0.1:8000/notes/1 -H 'Content-Type: application/json' -d '{"title": "Groceries"}'
