@@ -3,7 +3,8 @@
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, StringConstraints
 
 from notes_api import store
@@ -16,6 +17,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Notes API", lifespan=lifespan)
+
+
+@app.exception_handler(Exception)
+async def internal_error(request: Request, exc: Exception) -> JSONResponse:
+    # Starlette re-raises the error after this response, so uvicorn still logs it.
+    return JSONResponse({"detail": "Internal Server Error"}, status_code=500)
 
 
 class NoteIn(BaseModel):
