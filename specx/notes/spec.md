@@ -426,7 +426,7 @@ None.
 - **Assumptions:**
   - The failed reads and writes use a database with no `notes` table. Reason: The failure then does not depend on file mode or root.
   - The failed `migrate` uses a file that is not a SQLite database. Reason: `connect` succeeds, and the first `PRAGMA` then fails.
-  - Each failure case must raise `sqlite3.DatabaseError`. Reason: A call that does not fail makes the test prove less.
+  - Each failure case must raise `sqlite3.DatabaseError`. Reason: If a call does not fail, the test does not check the failure path.
   - The root skip also checks that `os.geteuid` exists. Reason: Windows does not have `os.geteuid`.
 
 **Steps**
@@ -449,6 +449,7 @@ None.
 - 2026-11-09: the user approved the task and its start: "yes".
 - 2026-11-09: an agent built the task in commit `6bfb95a`. The main session merged it. `uv run --locked pytest` gives 19 passed.
 - 2026-11-09: the main session ran the leak test on the old `store.py` from `8a18465`. The test fails, as the task requires. The AC11 test passes from `tests/`.
+- 2026-11-09: the independent review is [2026-11-09-NOTES-T4.md](../_reviews/2026-11-09-NOTES-T4.md). The NOTES-M1 demo waits for the user.
 
 ## 11. Open questions
 

@@ -4,7 +4,7 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 3. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent built NOTES-T3, the fixes from that review. An independent agent reviewed NOTES-M1 again. At the demo, the user chose a leak test and two test fixes (NOTES-D4). An agent built NOTES-T4. An independent agent now reviews it.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 3. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent built NOTES-T3, the fixes from that review. An independent agent reviewed NOTES-M1 again. At the demo, the user chose a leak test and two test fixes (NOTES-D4). An agent built NOTES-T4. An independent agent reviewed it. The NOTES-M1 demo waits for the user.
 
 ## Waiting on you
 
@@ -42,9 +42,11 @@ Implementation details agents chose on their own since the last demo. Overturn a
 | The NOTES-AC10 test also checks that the number of notes stays 1. | The test shows that the failed write changes no data. | NOTES-T3 |
 | The NOTES-AC11 test starts uvicorn as a separate process. | The test sees the real exit code and log. | NOTES-T3 |
 | The NOTES-AC11 test checks for a non-zero exit code and two log lines. | These show that the API wrote the error and stopped. | NOTES-T3 |
-| The leak test makes errors with a database that has no `notes` table. | The failure then does not depend on file mode or root. | NOTES-T4 |
+| The leak test causes errors with a database that has no `notes` table. | The failure then does not depend on file mode or root. | NOTES-T4 |
+| The failed `migrate` uses a file that is not a SQLite database. | `connect` succeeds, and the first `PRAGMA` then fails. | NOTES-T4 |
+| Each failure case must raise `sqlite3.DatabaseError`. | If a call does not fail, the test does not check the failure path. | NOTES-T4 |
 | The root skip also checks that `os.geteuid` exists. | Windows does not have `os.geteuid`. | NOTES-T4 |
 
 ## Latest review
 
-[2026-11-09-NOTES-M1-fixes.md](_reviews/2026-11-09-NOTES-M1-fixes.md)
+[2026-11-09-NOTES-T4.md](_reviews/2026-11-09-NOTES-T4.md)
