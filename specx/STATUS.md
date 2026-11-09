@@ -4,7 +4,7 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 4. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent now builds NOTES-T2.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 4. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent now reviews NOTES-M2.
 
 ## Waiting on you
 
@@ -46,6 +46,12 @@ Implementation details agents chose on their own since the last demo. Overturn a
 | The failed `migrate` uses a file that is not a SQLite database. | `connect` succeeds, and the first `PRAGMA` then fails. | NOTES-T4 |
 | Each failure case must raise `sqlite3.DatabaseError`. | If a call does not fail, the test does not check the failure path. | NOTES-T4 |
 | The root skip also checks that `os.geteuid` exists. | Windows does not have `os.geteuid`. | NOTES-T4 |
+| A `PATCH` with no fields gets 422 before the ID check. | §6.5 puts validation before the 404 check. | NOTES-T2 |
+| A `PATCH` with only unknown fields gets 422 `No fields to change`. | The API ignores unknown fields. | NOTES-T2 |
+| A `PATCH` field with an explicit `null` gets 422. A missing field keeps its old value. | §6.3 requires 422 for `null`. | NOTES-T2 |
+| A `PATCH` sets `updated_at` also when the values do not change. | §6.3 says that `updated_at` is the time of the change. | NOTES-T2 |
+| The `No fields to change` error has the body `{"detail": "No fields to change"}`. | The §6.3 error table gives this row its own body. | NOTES-T2 |
+| One SQL `UPDATE … RETURNING` statement changes the note and reads it. | The change and the read are then in one transaction. | NOTES-T2 |
 
 ## Latest review
 

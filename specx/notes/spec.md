@@ -353,7 +353,13 @@ None.
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 gives all contracts and errors
 - **Branch / worktree / PR:** `specx/NOTES-T2`, `../specx-example-NOTES-T2`, —
-- **Assumptions:** None yet.
+- **Assumptions:**
+  - The `No fields to change` error has the body `{"detail": "No fields to change"}`. Reason: The §6.3 error table gives this row its own body.
+  - A `PATCH` with no fields gets 422 before the ID check. Reason: §6.5 puts validation before the 404 check.
+  - A `PATCH` with only unknown fields gets 422 `No fields to change`. Reason: The API ignores unknown fields.
+  - A `PATCH` field with an explicit `null` gets 422. A missing field keeps its old value. Reason: §6.3 requires 422 for `null`.
+  - A `PATCH` sets `updated_at` also when the values do not change. Reason: §6.3 says that `updated_at` is the time of the change.
+  - One SQL `UPDATE … RETURNING` statement changes the note and reads it. Reason: The change and the read are then in one transaction.
 
 **Steps**
 
@@ -374,6 +380,8 @@ None.
 - 2026-11-08: the user approved the task: "yes approve".
 - 2026-11-09: steps 4 and 5 added from NOTES-D5. The gate command now matches ROOT §6.12.
 - 2026-11-09: the user approved the NOTES-M2 preview: "yes approve".
+- 2026-11-09: an agent built the task in commit `ec15e89`. The main session merged it. `uv run --locked pytest` gives 37 passed.
+- 2026-11-09: the agent removed `closing` from `delete_note` in a copy. The leak test then failed, as NOTES-D5 requires.
 
 ### NOTES-T3: Fixes from the NOTES-M1 review
 
