@@ -50,3 +50,28 @@ def get_note(note_id: int) -> dict | None:
             "SELECT id, title, body, created_at, updated_at FROM notes WHERE id = ?", (note_id,)
         ).fetchone()
     return dict(row) if row else None
+
+
+def list_notes() -> list[dict]:
+    with closing(connect()) as conn:
+        rows = conn.execute(
+            "SELECT id, title, body, created_at, updated_at FROM notes ORDER BY updated_at DESC, id DESC"
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def update_note(note_id: int, title: str | None, body: str | None) -> dict | None:
+    """Change the given fields; None keeps the old value."""
+    with closing(connect()) as conn, conn:
+        row = conn.execute(
+            "UPDATE notes SET title = COALESCE(?, title), body = COALESCE(?, body), updated_at = ? WHERE id = ?"
+            " RETURNING id, title, body, created_at, updated_at",
+            (title, body, now(), note_id),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def delete_note(note_id: int) -> bool:
+    with closing(connect()) as conn, conn:
+        cur = conn.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+    return cur.rowcount > 0

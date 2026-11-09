@@ -50,6 +50,24 @@ Read a note:
 curl http://127.0.0.1:8000/notes/1
 ```
 
+List all notes. The note with the latest `updated_at` is first. If two notes have the same `updated_at`, the note with the higher ID is first.
+
+```sh
+curl http://127.0.0.1:8000/notes
+```
+
+Change a note. Send `title`, `body`, or both. The same rules as for a new note apply. The API changes only these fields and `updated_at`. A request with no `title` and no `body` gets status 422 with `No fields to change`.
+
+```sh
+curl -X PATCH http://127.0.0.1:8000/notes/1 -H 'Content-Type: application/json' -d '{"title": "Groceries"}'
+```
+
+Delete a note. The response has status 204 and no body.
+
+```sh
+curl -X DELETE http://127.0.0.1:8000/notes/1
+```
+
 An ID that does not exist gets status 404 with `{"detail": "Note not found"}`. Incorrect data gets status 422.
 
 ### Run the tests
