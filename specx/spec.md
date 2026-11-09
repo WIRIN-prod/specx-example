@@ -2,7 +2,7 @@
 id: ROOT
 title: specx-example
 status: approved
-version: 3
+version: 4
 parent: none
 depends_on: []
 ---
@@ -99,7 +99,7 @@ None: the Core stage has no object with states.
 - A request with incorrect data gets a 422 error. It does not change data.
 - A request for an ID that does not exist gets a 404 error.
 - IF the API cannot open the SQLite file at start, THEN it writes the error to the log and stops (ROOT-D16).
-- IF the API cannot read or write the SQLite file after the start, THEN it sends a 500 error. FastAPI writes the error to the log.
+- IF the API cannot read or write the SQLite file after the start, THEN it sends a 500 error. uvicorn writes the error to the log.
 - The API does not retry.
 
 ### 6.8 Security and privacy
@@ -329,3 +329,4 @@ None.
 | 1 | 2026-11-07 | Created | — |
 | 2 | 2026-11-08 | Framework, roadmap, and project-wide design for the Core stage | user, "yes approve" |
 | 3 | 2026-11-08 | Decisions ROOT-D16 to ROOT-D19 from the NOTES-M1 review | user, "Yes approve" |
+| 4 | 2026-11-09 | §6.7: uvicorn writes the error to the log, not FastAPI (review 2026-11-09, F4) | user, "yes" |

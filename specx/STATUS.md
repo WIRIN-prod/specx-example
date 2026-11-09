@@ -4,7 +4,7 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 3 and the NOTES spec version 2. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent built NOTES-T3, the fixes from that review. An independent agent reviewed NOTES-M1 again. The NOTES-M1 demo waits for the user.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 3. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent built NOTES-T3, the fixes from that review. An independent agent reviewed NOTES-M1 again. At the demo, the user chose a leak test and two test fixes (NOTES-D4). An agent now builds NOTES-T4.
 
 ## Waiting on you
 

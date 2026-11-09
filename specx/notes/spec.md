@@ -2,7 +2,7 @@
 id: NOTES
 title: Notes
 status: approved
-version: 2
+version: 3
 parent: ROOT
 depends_on: []
 ---
@@ -268,13 +268,20 @@ None.
 - **Answer:** "Newest first, no paging (Recommended)". (user, 2026-11-08)
 - **Affects:** NOTES-R3, §6.3
 
+### NOTES-D4: Fixes from the NOTES-M1 re-review
+
+- **Status:** answered (2026-11-09)
+- **Question:** How do the tests guard against an open SQLite connection? What happens to review findings F2 and F3?
+- **Answer:** "Add a leak test (Recommended)", "Fix both (Recommended)", and "New task NOTES-T4 in M1 (Recommended)". (user, 2026-11-09)
+- **Affects:** NOTES-T4, the tests
+
 ## 10. Tasks
 
 ### Milestones
 
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
-| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3 | in-progress |
+| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-progress |
 | NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | todo |
 
 ### NOTES-T1: Create and read a note
@@ -402,6 +409,41 @@ None.
 - 2026-11-09: the independent review is [2026-11-09-NOTES-M1-fixes.md](../_reviews/2026-11-09-NOTES-M1-fixes.md). The demo waits for the user.
 - 2026-11-09: the NOTES-AC10 test fails when a root user runs it, because root can write to a file with mode `0o444`.
 
+### NOTES-T4: Leak test and test fixes from the NOTES-M1 re-review
+
+- **Status:** in-progress
+- **Type:** chore
+- **Why:** The re-review found F1, F2, and F3. The user chose the fixes (NOTES-D4).
+- **Done when:** The leak test fails on the old `store.py` and passes on the new one. The AC10 and AC11 tests work as root and from `tests/`.
+- **Milestone:** NOTES-M1
+- **Parent:** None
+- **Depends on:** NOTES-T3
+- **Covers:** NOTES-R11, NOTES-R12
+- **Decisions:** NOTES-D4
+- **Files:** `tests/`
+- **Model:** small, because the spec gives each change
+- **Branch / worktree / PR:** `specx/NOTES-T4`, `../specx-example-NOTES-T4`, —
+- **Assumptions:** None yet.
+
+**Steps**
+
+1. Write a test that calls `migrate`, `create_note`, and `get_note` when they succeed and when they fail.
+2. Make this test record all `ResourceWarning` warnings. The test fails if a warning says `unclosed database`.
+3. Run garbage collection in the test before the check, so that each open connection makes its warning.
+4. Skip the AC10 test when the user is root. Give the reason "root can write to a read-only file".
+5. Give the AC11 test an absolute path to `src`, found from the test file.
+
+**Verification**
+
+- `uv run --locked pytest`: all tests pass.
+- The leak test fails on the old `store.py` from commit `8a18465`. Run it from a copy outside the repository.
+- `cd tests && uv run --locked pytest -k ac11`: the test passes.
+
+**Log**
+
+- 2026-11-09: created from the NOTES-M1 re-review.
+- 2026-11-09: the user approved the task and its start: "yes".
+
 ## 11. Open questions
 
 None.
@@ -412,3 +454,4 @@ None.
 |---|---|---|---|
 | 1 | 2026-11-08 | Created | user, "yes approve" |
 | 2 | 2026-11-08 | NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11, the 500 error, the title trim, and NOTES-T3, from the NOTES-M1 review | user, "Yes approve" |
+| 3 | 2026-11-09 | NOTES-D4 and task NOTES-T4, from the NOTES-M1 re-review | user, "yes" |
