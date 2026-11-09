@@ -371,7 +371,13 @@ None.
 - **Files:** `pyproject.toml`, `uv.lock`, `src/notes_api/`, `tests/`
 - **Model:** small, because the spec gives each change
 - **Branch / worktree / PR:** `specx/NOTES-T3`, `../specx-example-NOTES-T3`, —
-- **Assumptions:** None yet.
+- **Assumptions:**
+  - The error handler catches each `Exception`, not only `sqlite3.Error`. Reason: ROOT §6.3 gives one body for all 500 errors.
+  - Starlette raises the error again after the handler sends the response. Reason: uvicorn then writes the error to the log (ROOT §6.7).
+  - The NOTES-AC10 test sets the database file to mode `0o444` after the start. Reason: the API can then only read the file.
+  - The NOTES-AC10 test also checks that the number of notes stays 1. Reason: the test shows that the failed write changes no data.
+  - The NOTES-AC11 test starts uvicorn as a separate process with `--port 0`. Reason: the test sees the real exit code and log.
+  - The NOTES-AC11 test checks for a non-zero exit code and two log lines. Reason: these show that the API wrote the error and stopped.
 
 **Steps**
 
@@ -391,6 +397,9 @@ None.
 - 2026-11-08: created from the NOTES-M1 review.
 - 2026-11-09: the user approved the task and its start: "Yes approve".
 - 2026-11-09: the build starts in worktree `../specx-example-NOTES-T3`.
+- 2026-11-09: an agent built the task in commit `1e0e052`. The main session merged it. `uv run --locked pytest -W error::ResourceWarning` gives 18 passed.
+- 2026-11-09: the old code also passes with `-W error::ResourceWarning`. Thus this command does not prove that each connection closes. The review must check this.
+- 2026-11-09: the NOTES-AC10 test fails when a root user runs it, because root can write to a file with mode `0o444`.
 
 ## 11. Open questions
 

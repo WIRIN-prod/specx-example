@@ -4,7 +4,7 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 3 and the NOTES spec version 2. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent now builds NOTES-T3, the fixes from that review.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 3 and the NOTES spec version 2. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent built NOTES-T3, the fixes from that review. An independent agent now reviews NOTES-M1 again.
 
 ## Waiting on you
 
@@ -36,6 +36,9 @@ Implementation details agents chose on their own since the last demo. Overturn a
 | The CI workflow runs on each pull request with `uv run --locked pytest`. | `--locked` also stops CI if `uv.lock` is old. | NOTES-T1 |
 | `.gitignore` ignores all `*.db` files. | Test and local database files must not go into git. | NOTES-T1 |
 | The README start command gives `--host 127.0.0.1 --port 8000`. | The command then shows the values of ROOT §6.8 and §6.9. | NOTES-T1 |
+| The error handler catches each `Exception`, not only `sqlite3.Error`. | ROOT §6.3 gives one body for all 500 errors. | NOTES-T3 |
+| The NOTES-AC10 test makes the database file read-only after the start. | The API can then only read the file. | NOTES-T3 |
+| The NOTES-AC11 test starts uvicorn as a separate process. | The test sees the real exit code and log. | NOTES-T3 |
 
 ## Latest review
 
