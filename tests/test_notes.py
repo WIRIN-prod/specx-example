@@ -119,7 +119,9 @@ def test_ac8_patch_no_fields(client):
     for payload in ({}, {"color": "red"}):
         r = client.patch("/notes/1", json=payload)
         assert r.status_code == 422
-        assert r.json() == {"detail": "No fields to change"}
+        assert r.json() == {
+            "detail": [{"type": "value_error", "loc": ["body"], "msg": "No fields to change", "input": payload}]
+        }
     assert client.get("/notes/1").json() == note
 
 
@@ -142,6 +144,37 @@ def test_invalid_patch_changes_no_data(client, payload):
     assert r.status_code == 422
     assert isinstance(r.json()["detail"], list)
     assert client.get("/notes/1").json() == note
+
+
+def test_patch_title_and_body(client):
+    client.post("/notes", json={"title": "Old", "body": "Text"})
+    r = client.patch("/notes/1", json={"title": "New", "body": "Other"})
+    assert r.status_code == 200
+    assert (r.json()["title"], r.json()["body"]) == ("New", "Other")
+    assert client.get("/notes/1").json() == r.json()
+
+
+def test_patch_no_fields_unknown_id_is_422(client):
+    r = client.patch("/notes/99", json={})
+    assert r.status_code == 422
+    assert r.json()["detail"][0]["msg"] == "No fields to change"
+
+
+def test_patch_keeps_created_at(client, db_path):
+    client.post("/notes", json={"title": "Old"})
+    with closing(sqlite3.connect(db_path)) as conn, conn:
+        conn.execute("UPDATE notes SET created_at = '2000-01-01T00:00:00Z', updated_at = created_at WHERE id = 1")
+    r = client.patch("/notes/1", json={"title": "New"})
+    assert r.json()["created_at"] == "2000-01-01T00:00:00Z"
+    assert r.json()["updated_at"] != "2000-01-01T00:00:00Z"
+
+
+def test_second_delete_is_404(client):
+    client.post("/notes", json={"title": "Gone"})
+    assert client.delete("/notes/1").status_code == 204
+    r = client.delete("/notes/1")
+    assert r.status_code == 404
+    assert r.json() == {"detail": "Note not found"}
 
 
 def test_ac5_delete(client):
@@ -226,6 +259,18 @@ def test_ac10_database_error_after_start(db_path):
     assert r.status_code == 500
     assert r.json() == {"detail": "Internal Server Error"}
     assert count_notes(db_path) == 1
+
+
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0, reason="root can write to a read-only file")
+@pytest.mark.parametrize("method, kwargs", [("patch", {"json": {"title": "A"}}), ("delete", {})])
+def test_patch_delete_database_error_after_start(db_path, method, kwargs):
+    with TestClient(app, raise_server_exceptions=False) as c:
+        note = c.post("/notes", json={"title": "First"}).json()
+        db_path.chmod(0o444)  # the API can only read the file now
+        r = c.request(method, "/notes/1", **kwargs)
+        assert c.get("/notes/1").json() == note
+    assert r.status_code == 500
+    assert r.json() == {"detail": "Internal Server Error"}
 
 
 def test_ac11_start_fails_when_database_cannot_open(tmp_path):

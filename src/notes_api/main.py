@@ -4,8 +4,9 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, PrivateAttr, StringConstraints, model_validator
 
 from notes_api import store
 
@@ -38,6 +39,14 @@ class NotePatch(BaseModel):
     # Pydantic does not validate defaults, so a missing field is None but an explicit null gets 422.
     title: Title = None
     body: Body = None
+    _raw: dict = PrivateAttr()  # the request body as sent, for the `No fields to change` error
+
+    @model_validator(mode="wrap")
+    @classmethod
+    def keep_raw(cls, data, handler):
+        model = handler(data)
+        model._raw = data
+        return model
 
 
 class Note(BaseModel):
@@ -69,7 +78,10 @@ def list_notes():
 @app.patch("/notes/{id}", response_model=Note)
 def update_note(id: int, patch: NotePatch):
     if patch.title is None and patch.body is None:
-        raise HTTPException(status_code=422, detail="No fields to change")
+        # Raised here, not in a validator, so that `msg` has no "Value error, " prefix and no `ctx` (NOTES-D6).
+        raise RequestValidationError(
+            [{"type": "value_error", "loc": ("body",), "msg": "No fields to change", "input": patch._raw}]
+        )
     note = store.update_note(id, patch.title, patch.body)
     if note is None:
         raise HTTPException(status_code=404, detail="Note not found")
