@@ -519,7 +519,8 @@ None.
 - 2026-11-09: the user approved the task and its start: "yes approve".
 - 2026-11-09: an agent built the task in commit `b5d95ef`. The main session merged it. `uv run --locked pytest` gives 43 passed.
 - 2026-11-09: `curl` with `PATCH /notes/1` and `{}` gave the body in the §6.3 error table.
-- 2026-11-09: a cleanup command of the build agent had an empty variable. It stopped processes outside the task. systemd started the three stopped services again.
+- 2026-11-09: the build agent ran `pkill -f "port $PORT"` with an empty `PORT`. The command stopped `buildx-api.service`, `openclaw-gateway.service`, and `openclaw-gateway-quota-test.service`. systemd started them again. The main session told the user.
+- 2026-11-09: the independent review is [2026-11-09-NOTES-T5.md](../_reviews/2026-11-09-NOTES-T5.md). The review found that §6.3 fixes the `input` assumption.
 
 ## 11. Open questions
 

@@ -4,7 +4,7 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 5. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. At the NOTES-M2 demo, the user chose two fixes (NOTES-D6). An agent built NOTES-T5. An independent agent now reviews it.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 5. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. At the NOTES-M2 demo, the user chose two fixes (NOTES-D6). An agent built NOTES-T5. An independent agent reviewed it. The NOTES-M2 demo waits for the user.
 
 ## Waiting on you
 
@@ -47,8 +47,7 @@ Implementation details agents chose on their own since the last demo. Overturn a
 | Each failure case must raise `sqlite3.DatabaseError`. | If a call does not fail, the test does not check the failure path. | NOTES-T4 |
 | The root skip also checks that `os.geteuid` exists. | Windows does not have `os.geteuid`. | NOTES-T4 |
 | One SQL `UPDATE … RETURNING` statement changes the note and reads it. | The change and the read are then in one transaction. | NOTES-T2 |
-| `input` in the `No fields to change` error holds the request body as the client sent it. | The §6.3 row says "the request body". | NOTES-T5 |
 
 ## Latest review
 
-[2026-11-09-NOTES-M2.md](_reviews/2026-11-09-NOTES-M2.md)
+[2026-11-09-NOTES-T5.md](_reviews/2026-11-09-NOTES-T5.md)
