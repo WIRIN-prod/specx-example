@@ -8,3 +8,4 @@ Statuses: `draft` → `todo` → `in-progress` → `in-review` → `done`, plus 
 |---|---|---|---|---|---|---|---|---|
 | NOTES-T1 | Create and read a note | feature | NOTES-M1 | [NOTES](notes/spec.md) | in-progress | — | — | — |
 | NOTES-T2 | List, change, and delete notes | feature | NOTES-M2 | [NOTES](notes/spec.md) | todo | — | NOTES-T1 | — |
+| NOTES-T3 | Fixes from the NOTES-M1 review | chore | NOTES-M1 | [NOTES](notes/spec.md) | in-progress | — | NOTES-T1 | — |

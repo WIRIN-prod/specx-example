@@ -2,7 +2,7 @@
 id: NOTES
 title: Notes
 status: approved
-version: 1
+version: 2
 parent: ROOT
 depends_on: []
 ---
@@ -49,6 +49,8 @@ None: new work. The repository has only `README.md` and the SpecX files.
 | NOTES-R7 | Validation | IF the trimmed title has fewer than 1 or more than 200 characters, THEN THE SYSTEM SHALL send status 422 and change no data. | NOTES-D2 |
 | NOTES-R8 | Validation | IF the body has more than 10000 characters, THEN THE SYSTEM SHALL send status 422 and change no data. | NOTES-D2 |
 | NOTES-R9 | Validation | IF a `PATCH` request has no `title` and no `body`, THEN THE SYSTEM SHALL send status 422 with the message `No fields to change`. | ROOT-D12 |
+| NOTES-R11 | Resilience | IF the API cannot read or write the SQLite file after the start, THEN THE SYSTEM SHALL send status 500 with `{"detail": "Internal Server Error"}`. | ROOT-D19 |
+| NOTES-R12 | Resilience | IF the API cannot open the SQLite file at start, THEN THE SYSTEM SHALL write the error to the log and stop. | ROOT-D16 |
 | NOTES-R10 | Data | THE SYSTEM SHALL keep the notes in the SQLite file after the API stops and starts again. | ROOT-D2 |
 
 ## 5. Acceptance criteria
@@ -108,6 +110,18 @@ None: new work. The repository has only `README.md` and the SpecX files.
 - When the API stops and starts again with the same `NOTES_DB_PATH`
 - Then `GET /notes/1` sends note 1
 
+**NOTES-AC10** (R11) · integration
+
+- Given note 1 in a database file that the API can only read
+- When the owner sends `POST /notes` with `{"title": "A"}`
+- Then the status is 500 and the body is `{"detail": "Internal Server Error"}`
+
+**NOTES-AC11** (R12) · integration
+
+- Given `NOTES_DB_PATH` in a folder that does not exist
+- When the API starts
+- Then the start fails with an error, and the API does not accept requests
+
 ## 6. Design
 
 ### 6.1 Architecture
@@ -139,7 +153,7 @@ A **note** in a response has these fields:
 
 | Input | Type | Rules |
 |---|---|---|
-| `title` | string | Required. The system removes spaces at the start and the end (it trims the title). Then the title must have 1 to 200 characters. |
+| `title` | string | Required. The system removes whitespace (spaces, tabs, and line breaks) at the start and the end. Then the title must have 1 to 200 characters. |
 | `body` | string | Optional. The default is `""`. Not more than 10000 characters. The system does not remove spaces. |
 
 Response: status 201 and the new note. `created_at` and `updated_at` have the same value.
@@ -166,6 +180,7 @@ Response: status 200 and the changed note. `updated_at` is the time of the chang
 | 404 | The ID does not exist | `{"detail": "Note not found"}` |
 | 422 | A field breaks a rule, or `id` in the path is not an integer | The FastAPI list of field errors in `detail` |
 | 422 | A `PATCH` request has no `title` and no `body` | The FastAPI error format, with the message `No fields to change` |
+| 500 | The API cannot read or write the SQLite file | `{"detail": "Internal Server Error"}` |
 
 ### 6.4 Data model
 
@@ -259,7 +274,7 @@ None.
 
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
-| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1 | in-progress |
+| NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3 | in-progress |
 | NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | todo |
 
 ### NOTES-T1: Create and read a note
@@ -309,6 +324,7 @@ None.
 - 2026-11-08: the user approved the NOTES-M1 preview: "Approve and build".
 - 2026-11-08: The start point is `749f223`.
 - 2026-11-08: An agent built NOTES-T1 in commit `b1d1fda`. The main session ran `uv run --locked pytest` in the worktree: 15 passed, 1 warning. The warning: Starlette marks the use of `httpx` with `TestClient` as deprecated. The main session merged the task into `specx/delivery-NOTES`.
+- 2026-11-08: The independent review is [2026-11-08-NOTES-M1.md](../_reviews/2026-11-08-NOTES-M1.md). At the demo, the user answered the findings: "Refuse to start", "Keep httpx 0.28.1", "Accept all four", and "Accept all". The fixes go to NOTES-T3.
 
 ### NOTES-T2: List, change, and delete notes
 
@@ -341,6 +357,41 @@ None.
 - 2026-11-08: created.
 - 2026-11-08: the user approved the task: "yes approve".
 
+### NOTES-T3: Fixes from the NOTES-M1 review
+
+- **Status:** in-progress
+- **Type:** chore
+- **Why:** the NOTES-M1 review found M3, L1, L3, L4, L5, and L6. The user chose the fixes (ROOT-D16 to ROOT-D19).
+- **Done when:** NOTES-AC10 and NOTES-AC11 have tests that pass, the tests show no `ResourceWarning`, and `requires-python` is `==3.14.*`.
+- **Milestone:** NOTES-M1
+- **Parent:** None
+- **Depends on:** NOTES-T1
+- **Covers:** NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11
+- **Decisions:** ROOT-D16, ROOT-D17, ROOT-D18, ROOT-D19
+- **Files:** `pyproject.toml`, `uv.lock`, `src/notes_api/`, `tests/`
+- **Model:** small, because the spec gives each change
+- **Branch / worktree / PR:** `specx/NOTES-T3`, `../specx-example-NOTES-T3`, —
+- **Assumptions:** None yet.
+
+**Steps**
+
+1. Send `{"detail": "Internal Server Error"}` for a 500 error (§6.3).
+2. Close each SQLite connection, also when a query fails (review L3).
+3. Close each SQLite connection in the tests (review L4).
+4. Set `requires-python` to `==3.14.*`, then run `uv lock`.
+5. Write integration tests for NOTES-AC10 and NOTES-AC11.
+6. Write a test that whitespace (tabs and line breaks) at the start and the end of a title is removed.
+
+**Verification**
+
+- `uv run --locked pytest -W error::ResourceWarning`: all tests pass.
+
+**Log**
+
+- 2026-11-08: created from the NOTES-M1 review.
+- 2026-11-09: the user approved the task and its start: "Yes approve".
+- 2026-11-09: the build starts in worktree `../specx-example-NOTES-T3`.
+
 ## 11. Open questions
 
 None.
@@ -350,3 +401,4 @@ None.
 | Version | Date | Change | Approved by |
 |---|---|---|---|
 | 1 | 2026-11-08 | Created | user, "yes approve" |
+| 2 | 2026-11-08 | NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11, the 500 error, the title trim, and NOTES-T3, from the NOTES-M1 review | user, "Yes approve" |

@@ -4,11 +4,10 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 2 and the NOTES spec version 1. The user approved tasks NOTES-T1 and NOTES-T2. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. The NOTES-M1 demo waits for the user.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 3 and the NOTES spec version 2. The user approved tasks NOTES-T1, NOTES-T2, and NOTES-T3. An agent built NOTES-T1 (NOTES-M1) on `specx/delivery-NOTES`. An independent agent reviewed it. An agent now builds NOTES-T3, the fixes from that review.
 
 ## Waiting on you
 
-- Decide the review findings of NOTES-M1 and see the demo: [review](_reviews/2026-11-08-NOTES-M1.md).
 - ROOT-D4 (hosting) is open: [spec.md](spec.md), section 9. The DEPLOY phase needs it; the Core stage does not.
 
 ## Roadmap

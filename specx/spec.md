@@ -2,7 +2,7 @@
 id: ROOT
 title: specx-example
 status: approved
-version: 2
+version: 3
 parent: none
 depends_on: []
 ---
@@ -56,14 +56,15 @@ flowchart LR
 
 | Need | Choice | Version | Decision |
 |---|---|---|---|
-| Language | Python | 3.14 | ROOT-D6 |
+| Language | Python | 3.14; `requires-python` is `==3.14.*` | ROOT-D6, ROOT-D19 |
 | Web framework | FastAPI | 0.162.2 | ROOT-D1 |
 | Data validation | Pydantic (installed with FastAPI) | 2.14.3 | ROOT-D1 |
 | ASGI server | uvicorn | 0.54.0 | ROOT-D1 |
 | Database | SQLite, through the Python standard library module `sqlite3` | the SQLite of Python 3.14 | ROOT-D2, ROOT-D7 |
-| Packages and lock file | uv, with `pyproject.toml` and `uv.lock` | 0.12.23 | ROOT-D8 |
+| Packages and lock file | uv, with `pyproject.toml` and `uv.lock`; `pyproject.toml` makes this uv version necessary; no build backend, so start commands use `--app-dir src` | 0.12.23 | ROOT-D8, ROOT-D18 |
 | Tests | pytest | 9.2.0 | ROOT-D9 |
-| Test HTTP client | FastAPI `TestClient`, with httpx | 0.28.1 | ROOT-D9 |
+| Test HTTP client | FastAPI `TestClient`, with httpx (Starlette 1.10.0 marks it as deprecated; keep it) | 0.28.1 | ROOT-D9, ROOT-D17 |
+| Schema rollback | The `sqlite3` command-line tool on the computer of the owner | the version of the system | ROOT-D18 |
 | CI | GitHub Actions: `actions/checkout`, `astral-sh/setup-uv` | v7.0.1, v10.3.3 | ROOT-D10 |
 
 ### 6.3 Interfaces
@@ -72,7 +73,8 @@ flowchart LR
 - JSON field names use `snake_case`.
 - `PATCH` changes only the fields in the request (ROOT-D12).
 - FastAPI validates each request. Unknown request fields are ignored.
-- Errors use the FastAPI format (ROOT-D11). A 404 error body is `{"detail": "<message>"}`. A 422 error body is the FastAPI list of field errors in `detail`.
+- Errors use the FastAPI format (ROOT-D11). A 404 error body is `{"detail": "<message>"}`. A 422 error body is the FastAPI list of field errors in `detail`. A 500 error body is `{"detail": "Internal Server Error"}` (ROOT-D19).
+- FastAPI also serves `/docs`, `/redoc`, and `/openapi.json` (ROOT-D19).
 - The API has no version prefix and no authentication headers (ROOT-D3).
 - Lists have no pagination in the Core stage (NOTES-D3).
 
@@ -96,7 +98,8 @@ None: the Core stage has no object with states.
 
 - A request with incorrect data gets a 422 error. It does not change data.
 - A request for an ID that does not exist gets a 404 error.
-- IF the API cannot open or write the SQLite file, THEN it sends a 500 error. FastAPI writes the error to the log.
+- IF the API cannot open the SQLite file at start, THEN it writes the error to the log and stops (ROOT-D16).
+- IF the API cannot read or write the SQLite file after the start, THEN it sends a 500 error. FastAPI writes the error to the log.
 - The API does not retry.
 
 ### 6.8 Security and privacy
@@ -133,7 +136,7 @@ Deferred: DEPLOY. The field limits are in the NOTES spec.
 
 | Dimension | Approved criterion or threshold | Exact check or command | Run point | Failure policy | Decision/source |
 |---|---|---|---|---|---|
-| Tests | All tests pass | `uv run pytest` | Before each pull request, and in GitHub Actions on each pull request | Blocks the merge | ROOT-D10 |
+| Tests | All tests pass | `uv run --locked pytest` | Before each pull request, and in GitHub Actions on each pull request | Blocks the merge | ROOT-D10, ROOT-D18 |
 
 ### 6.13 Migration and rollout
 
@@ -283,6 +286,34 @@ Project-wide decisions go here, including the main branch, worktree location, an
 - **Answer:** "One per milestone (Recommended)". The first phase, NOTES, is one pull request. (user, 2026-11-08)
 - **Affects:** `/specx:execute`
 
+### ROOT-D16: Database error at start
+
+- **Status:** answered (2026-11-08)
+- **Question:** The NOTES-M1 review (M1) found that the API stops at start if it cannot open the file. ROOT §6.7 said it sends 500. Which is correct?
+- **Answer:** "Refuse to start (Recommended)": the API stops with an error. (user, 2026-11-08)
+- **Affects:** §6.7
+
+### ROOT-D17: Test client
+
+- **Status:** answered (2026-11-08)
+- **Question:** Starlette 1.10.0 marks `httpx` 0.28.1 with `TestClient` as deprecated (review M2). What do the tests use?
+- **Answer:** "Keep httpx 0.28.1 (Recommended)": no change until an upgrade of FastAPI. (user, 2026-11-08)
+- **Affects:** §6.2
+
+### ROOT-D18: Tools from the NOTES-T1 build
+
+- **Status:** answered (2026-11-08)
+- **Question:** Do you accept four tool choices from the NOTES-T1 build: `uv run --locked pytest` in CI, a necessary uv 0.12.23, no build backend, and the `sqlite3` tool for rollback?
+- **Answer:** "Accept all four (Recommended)". The gate command is now `uv run --locked pytest`. (user, 2026-11-08)
+- **Affects:** §6.2, §6.12
+
+### ROOT-D19: Smaller points from the NOTES-M1 review
+
+- **Status:** answered (2026-11-08)
+- **Question:** Do you accept: a JSON body for 500 errors, Python `==3.14.*`, the FastAPI pages `/docs`, `/redoc`, and `/openapi.json`, and a title trim that removes all whitespace?
+- **Answer:** "Accept all (Recommended)". (user, 2026-11-08)
+- **Affects:** §6.2, §6.3, NOTES §6.3
+
 ## 10. Tasks
 
 None yet.
@@ -297,3 +328,4 @@ None.
 |---|---|---|---|
 | 1 | 2026-11-07 | Created | — |
 | 2 | 2026-11-08 | Framework, roadmap, and project-wide design for the Core stage | user, "yes approve" |
+| 3 | 2026-11-08 | Decisions ROOT-D16 to ROOT-D19 from the NOTES-M1 review | user, "Yes approve" |
