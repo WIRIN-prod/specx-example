@@ -1,7 +1,7 @@
 ---
 id: NOTES
 title: Notes
-status: draft
+status: approved
 version: 4
 parent: ROOT
 depends_on: []
@@ -289,7 +289,7 @@ None.
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
 | NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-review |
-| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | todo |
+| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | in-progress |
 
 ### NOTES-T1: Create and read a note
 
@@ -342,7 +342,7 @@ None.
 
 ### NOTES-T2: List, change, and delete notes
 
-- **Status:** todo
+- **Status:** in-progress
 - **Type:** feature
 - **Story:** As the owner, I want to see all my notes, change them, and delete them, so that my notes stay correct.
 - **Milestone:** NOTES-M2
@@ -352,7 +352,7 @@ None.
 - **Decisions:** ROOT-D11, ROOT-D12, NOTES-D2, NOTES-D3, NOTES-D5
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because §6.3 gives all contracts and errors
-- **Branch / worktree / PR:** —
+- **Branch / worktree / PR:** `specx/NOTES-T2`, `../specx-example-NOTES-T2`, —
 - **Assumptions:** None yet.
 
 **Steps**
@@ -373,6 +373,7 @@ None.
 - 2026-11-08: created.
 - 2026-11-08: the user approved the task: "yes approve".
 - 2026-11-09: steps 4 and 5 added from NOTES-D5. The gate command now matches ROOT §6.12.
+- 2026-11-09: the user approved the NOTES-M2 preview: "yes approve".
 
 ### NOTES-T3: Fixes from the NOTES-M1 review
 
@@ -473,4 +474,4 @@ None.
 | 1 | 2026-11-08 | Created | user, "yes approve" |
 | 2 | 2026-11-08 | NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11, the 500 error, the title trim, and NOTES-T3, from the NOTES-M1 review | user, "Yes approve" |
 | 3 | 2026-11-09 | NOTES-D4 and task NOTES-T4, from the NOTES-M1 re-review | user, "yes" |
-| 4 | 2026-11-09 | NOTES-D5; NOTES-T2 steps 4 and 5; NOTES-T2 gate command | pending |
+| 4 | 2026-11-09 | NOTES-D5; NOTES-T2 steps 4 and 5; NOTES-T2 gate command | user, "yes approve" |
