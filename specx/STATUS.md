@@ -4,10 +4,11 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 5. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. At the NOTES-M2 demo, the user chose two fixes (NOTES-D6). An agent built NOTES-T5. An independent agent reviewed it. The NOTES-M2 demo waits for the user.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 5. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. At the NOTES-M2 demo, the user chose two fixes (NOTES-D6). An agent built NOTES-T5. An independent agent reviewed it. At the NOTES-M2 demo, the user chose to open the pull request for the NOTES phase.
 
 ## Waiting on you
 
+- Approve the NOTES pull request.
 - ROOT-D4 (hosting) is open: [spec.md](spec.md), section 9. The DEPLOY phase needs it; the Core stage does not.
 
 ## Roadmap
@@ -15,7 +16,7 @@ The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec
 | Stage | Phase | Milestone | Progress | Version |
 |---|---|---|---|---|
 | Core | NOTES | NOTES-M1: create and read a note | demo done; waits for the phase pull request | 0.0.1 |
-| Core | NOTES | NOTES-M2: list, change, and delete notes | in progress | 0.0.1 |
+| Core | NOTES | NOTES-M2: list, change, and delete notes | demo done; waits for the phase pull request | 0.0.1 |
 | Essentials | SEARCH, TAGS, EXPORT | — | later | 0.1.0 |
 | Production | DEPLOY | — | later | 1.0.0 |
 

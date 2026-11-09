@@ -296,7 +296,7 @@ None.
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
 | NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-review |
-| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2, NOTES-T5 | in-progress |
+| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2, NOTES-T5 | in-review |
 
 ### NOTES-T1: Create and read a note
 
@@ -349,7 +349,7 @@ None.
 
 ### NOTES-T2: List, change, and delete notes
 
-- **Status:** in-progress
+- **Status:** in-review
 - **Type:** feature
 - **Story:** As the owner, I want to see all my notes, change them, and delete them, so that my notes stay correct.
 - **Milestone:** NOTES-M2
@@ -481,7 +481,7 @@ None.
 
 ### NOTES-T5: Fixes from the NOTES-M2 review
 
-- **Status:** in-progress
+- **Status:** in-review
 - **Type:** bug
 - **Why:** The NOTES-M2 review found F1 and F2. The user chose the fixes (NOTES-D6).
 - **Done when:** `PATCH` with no fields sends the body in the §6.3 error table, and the five new tests pass.
@@ -521,6 +521,7 @@ None.
 - 2026-11-09: `curl` with `PATCH /notes/1` and `{}` gave the body in the §6.3 error table.
 - 2026-11-09: the build agent ran `pkill -f "port $PORT"` with an empty `PORT`. The command stopped `buildx-api.service`, `openclaw-gateway.service`, and `openclaw-gateway-quota-test.service`. systemd started them again. The main session told the user.
 - 2026-11-09: the independent review is [2026-11-09-NOTES-T5.md](../_reviews/2026-11-09-NOTES-T5.md). The review found that §6.3 fixes the `input` assumption.
+- 2026-11-09: at the NOTES-M2 demo, the user chose "Keep as built (Recommended)" for review F1 and "Open the PR (Recommended)".
 
 ## 11. Open questions
 
