@@ -381,7 +381,8 @@ None.
 - 2026-11-09: steps 4 and 5 added from NOTES-D5. The gate command now matches ROOT §6.12.
 - 2026-11-09: the user approved the NOTES-M2 preview: "yes approve".
 - 2026-11-09: an agent built the task in commit `ec15e89`. The main session merged it. `uv run --locked pytest` gives 37 passed.
-- 2026-11-09: the agent removed `closing` from `delete_note` in a copy. The leak test then failed, as NOTES-D5 requires.
+- 2026-11-09: the build agent removed `closing` from `delete_note` in a copy of the code outside the repository. The leak test then failed.
+- 2026-11-09: the independent review is [2026-11-09-NOTES-M2.md](../_reviews/2026-11-09-NOTES-M2.md). The review found that the spec already fixes assumptions 2 to 5. Assumption 1 is a conflict between the specs (review F1).
 
 ### NOTES-T3: Fixes from the NOTES-M1 review
 
