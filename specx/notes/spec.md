@@ -493,7 +493,8 @@ None.
 - **Files:** `README.md`, `src/notes_api/`, `tests/`
 - **Model:** small, because the spec gives the exact body
 - **Branch / worktree / PR:** `specx/NOTES-T5`, `../specx-example-NOTES-T5`, —
-- **Assumptions:** None yet.
+- **Assumptions:**
+  - `input` holds the request body as the client sent it, also with unknown fields. Reason: The §6.3 row says "the request body".
 
 **Steps**
 
@@ -516,6 +517,9 @@ None.
 
 - 2026-11-09: created from the NOTES-M2 review.
 - 2026-11-09: the user approved the task and its start: "yes approve".
+- 2026-11-09: an agent built the task in commit `b5d95ef`. The main session merged it. `uv run --locked pytest` gives 43 passed.
+- 2026-11-09: `curl` with `PATCH /notes/1` and `{}` gave the body in the §6.3 error table.
+- 2026-11-09: a cleanup command of the build agent had an empty variable. It stopped processes outside the task. systemd started the three stopped services again.
 
 ## 11. Open questions
 
