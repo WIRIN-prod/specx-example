@@ -4,11 +4,10 @@ Where the project stands, for the user to read at a glance. The main session upd
 
 ## Now
 
-The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 4. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. The NOTES-M2 demo waits for the user.
+The roadmap is in [spec.md](spec.md), section 8. The user approved the root spec version 4 and the NOTES spec version 5. Agents built NOTES-T1, NOTES-T3, and NOTES-T4 (NOTES-M1) on `specx/delivery-NOTES`. Independent agents reviewed each change. At the NOTES-M1 demo, the user chose to continue to NOTES-M2. The user approved the NOTES-M2 preview. An agent built NOTES-T2. An independent agent reviewed NOTES-M2. At the NOTES-M2 demo, the user chose two fixes (NOTES-D6). An agent now builds NOTES-T5.
 
 ## Waiting on you
 
-- Choose the body of the `No fields to change` 422 error (NOTES-M2 review F1).
 - ROOT-D4 (hosting) is open: [spec.md](spec.md), section 9. The DEPLOY phase needs it; the Core stage does not.
 
 ## Roadmap

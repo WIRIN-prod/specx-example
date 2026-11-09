@@ -2,7 +2,7 @@
 id: NOTES
 title: Notes
 status: approved
-version: 4
+version: 5
 parent: ROOT
 depends_on: []
 ---
@@ -179,7 +179,7 @@ Response: status 200 and the changed note. `updated_at` is the time of the chang
 |---|---|---|
 | 404 | The ID does not exist | `{"detail": "Note not found"}` |
 | 422 | A field breaks a rule, or `id` in the path is not an integer | The FastAPI list of field errors in `detail` |
-| 422 | A `PATCH` request has no `title` and no `body` | The FastAPI error format, with the message `No fields to change` |
+| 422 | A `PATCH` request has no `title` and no `body` | The FastAPI list of field errors in `detail`, with one item: `{"type": "value_error", "loc": ["body"], "msg": "No fields to change", "input": <the request body>}` (NOTES-D6) |
 | 500 | The API cannot read or write the SQLite file | `{"detail": "Internal Server Error"}` |
 
 ### 6.4 Data model
@@ -282,6 +282,13 @@ None.
 - **Answer:** "Add both to NOTES-T2 (Recommended)". (user, 2026-11-09)
 - **Affects:** NOTES-T2
 
+### NOTES-D6: Body of the `No fields to change` error, and missing tests
+
+- **Status:** answered (2026-11-09)
+- **Question:** The NOTES-M2 review found F1 and F2. Which body does the `No fields to change` error have? Do the five untested behaviors get tests?
+- **Answer:** "List format, like other 422s (Recommended)" and "Add all five (Recommended)". (user, 2026-11-09)
+- **Affects:** §6.3 error table, NOTES-T5
+
 ## 10. Tasks
 
 ### Milestones
@@ -289,7 +296,7 @@ None.
 | ID | Goal | Done when | Tasks | Status |
 |---|---|---|---|---|
 | NOTES-M1 | Create and read a note | The owner starts the API, sends `POST /notes` with a title and a body with `curl`, then sends `GET /notes/{id}` and gets the same note. | NOTES-T1, NOTES-T3, NOTES-T4 | in-review |
-| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2 | in-progress |
+| NOTES-M2 | List, change, and delete notes | `GET /notes` lists all notes. `PATCH /notes/{id}` changes a note. After `DELETE /notes/{id}`, `GET` for that note gets 404. | NOTES-T2, NOTES-T5 | in-progress |
 
 ### NOTES-T1: Create and read a note
 
@@ -472,6 +479,44 @@ None.
 - 2026-11-09: the independent review is [2026-11-09-NOTES-T4.md](../_reviews/2026-11-09-NOTES-T4.md). The NOTES-M1 demo waits for the user.
 - 2026-11-09: at the demo, the user chose "Continue to NOTES-M2 (Recommended)". The task waits for the phase pull request.
 
+### NOTES-T5: Fixes from the NOTES-M2 review
+
+- **Status:** in-progress
+- **Type:** bug
+- **Why:** The NOTES-M2 review found F1 and F2. The user chose the fixes (NOTES-D6).
+- **Done when:** `PATCH` with no fields sends the body in the §6.3 error table, and the five new tests pass.
+- **Milestone:** NOTES-M2
+- **Parent:** None
+- **Depends on:** NOTES-T2
+- **Covers:** NOTES-R4, NOTES-R5, NOTES-R9, NOTES-R11, NOTES-AC8
+- **Decisions:** ROOT-D11, NOTES-D6
+- **Files:** `README.md`, `src/notes_api/`, `tests/`
+- **Model:** small, because the spec gives the exact body
+- **Branch / worktree / PR:** `specx/NOTES-T5`, `../specx-example-NOTES-T5`, —
+- **Assumptions:** None yet.
+
+**Steps**
+
+1. Send the `No fields to change` error with the body in the §6.3 error table. Keep status 422.
+2. Make sure that `PATCH` with no fields to an unknown ID still sends 422, not 404 (§6.5).
+3. Change the AC8 test to check the full new body.
+4. Write a test: `PATCH` with `title` and `body` changes both fields.
+5. Write a test: `PATCH /notes/99` with `{}` sends 422.
+6. Write a test: a second `DELETE` of the same note sends 404.
+7. Write a test: `PATCH` and `DELETE` send the JSON 500 body when the database file is read-only. Skip it for root, as in the AC10 test.
+8. Write a test: `created_at` does not change after `PATCH`.
+9. If `README.md` shows this error, change it to the new body.
+
+**Verification**
+
+- `uv run --locked pytest`: all tests pass.
+- Start the API. Send `PATCH /notes/1` with `{}` with `curl`. The body agrees with the §6.3 error table.
+
+**Log**
+
+- 2026-11-09: created from the NOTES-M2 review.
+- 2026-11-09: the user approved the task and its start: "yes approve".
+
 ## 11. Open questions
 
 None.
@@ -484,3 +529,4 @@ None.
 | 2 | 2026-11-08 | NOTES-R11, NOTES-R12, NOTES-AC10, NOTES-AC11, the 500 error, the title trim, and NOTES-T3, from the NOTES-M1 review | user, "Yes approve" |
 | 3 | 2026-11-09 | NOTES-D4 and task NOTES-T4, from the NOTES-M1 re-review | user, "yes" |
 | 4 | 2026-11-09 | NOTES-D5; NOTES-T2 steps 4 and 5; NOTES-T2 gate command | user, "yes approve" |
+| 5 | 2026-11-09 | NOTES-D6, the body of the `No fields to change` error, and task NOTES-T5, from the NOTES-M2 review | user, "yes approve" |
